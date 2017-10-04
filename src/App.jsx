@@ -7,23 +7,24 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {
-        name: "Bob"
+        name: ""
       },
-      messages: [
-        {
-          username: "Bob",
-          content: "Has anyone seen my marbles?",
-        },
-        {
-          username: "Anonymous",
-          content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-        }
-      ]
+      messages: []
     };
   }
 
   componentDidMount() {
     this.socket = new WebSocket("ws://localhost:3001");
+
+    this.socket.addEventListener('message', message => {
+      this.setState({
+        messages: this.state.messages.concat([{
+          username: this.state.currentUser.name,
+          content: JSON.parse(message.data).content,
+          id: JSON.parse(message.data).id
+        }])
+      })
+    })
 
     this.socket.onopen = () => {
       console.log('Connected to WebSocket');
@@ -36,28 +37,33 @@ class App extends Component {
   }
 
   onMessage = (message) => {
-    this.setState({
-      messages: this.state.messages.concat([{
-        username: this.state.currentUser.name,
-        content: message
-      }])
-    })
     this.sendMessage(message);
   }
 
   sendMessage(message) {
-    this.socket.send(JSON.stringify({ username: this.state.currentUser.name, message }));
+    this.socket.send(JSON.stringify({ 
+      username: this.state.currentUser.name, 
+      content: message
+    }));
+  }
+
+  setCurrentUser = (currentUserName) => {
+    this.setState({
+      currentUser: {
+        name: currentUserName
+      }
+    })
   }
 
   render() {
+    console.log(this.state.currentUser.name);
     return (
       <div>
         <nav className="navbar">
           <a href="/" className="navbar-brand">Chatty {this.state.connected ? "Connected" : "Disconnected" }</a>
         </nav>
         <MessageList messages = { this.state.messages } />
-        <ChatBar currentUser={this.state.currentUser} onMessage={this.onMessage} connected={this.state.connected} />
-        
+        <ChatBar currentUser={this.state.currentUser} onMessage={this.onMessage} connected={this.state.connected} setCurrentUser={this.setCurrentUser} />        
       </div>
     );
   }
