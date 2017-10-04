@@ -22,6 +22,19 @@ class App extends Component {
     };
   }
 
+  componentDidMount() {
+    this.socket = new WebSocket("ws://localhost:3001");
+
+    this.socket.onopen = () => {
+      console.log('Connected to WebSocket');
+      this.setState({ connected: true });
+    };
+
+    this.socket.onclose = () => {
+      this.setState({ connected: false });
+    }
+  }
+
   onMessage = (message) => {
     this.setState({
       messages: this.state.messages.concat([{
@@ -29,16 +42,21 @@ class App extends Component {
         content: message
       }])
     })
+    this.sendMessage(message);
+  }
+
+  sendMessage(message) {
+    this.socket.send(JSON.stringify({ username: this.state.currentUser.name, message }));
   }
 
   render() {
     return (
       <div>
         <nav className="navbar">
-          <a href="/" className="navbar-brand">Chatty</a>
+          <a href="/" className="navbar-brand">Chatty {this.state.connected ? "Connected" : "Disconnected" }</a>
         </nav>
         <MessageList messages = { this.state.messages } />
-        <ChatBar currentUser={this.state.currentUser} onMessage={this.onMessage} />
+        <ChatBar currentUser={this.state.currentUser} onMessage={this.onMessage} connected={this.state.connected} />
         
       </div>
     );
