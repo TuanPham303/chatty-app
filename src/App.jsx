@@ -19,7 +19,7 @@ class App extends Component {
     this.socket.addEventListener('message', message => {
       this.setState({
         messages: this.state.messages.concat([{
-          username: this.state.currentUser.name,
+          username: JSON.parse(message.data).username,
           content: JSON.parse(message.data).content,
           id: JSON.parse(message.data).id
         }])
@@ -40,7 +40,8 @@ class App extends Component {
     this.sendMessage(message);
   }
 
-  sendMessage(message) {
+  sendMessage = (message) => {
+    console.log('on message: ', message);
     this.socket.send(JSON.stringify({ 
       username: this.state.currentUser.name, 
       content: message
@@ -48,6 +49,7 @@ class App extends Component {
   }
 
   setCurrentUser = (currentUserName) => {
+    console.log('heloo');
     this.setState({
       currentUser: {
         name: currentUserName
@@ -56,7 +58,6 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state.currentUser.name);
     return (
       <div>
         <nav className="navbar">

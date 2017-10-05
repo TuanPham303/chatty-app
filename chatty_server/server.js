@@ -18,6 +18,7 @@ const wss = new SocketServer.Server({ server });
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 function broadcast(data){
+  console.log(data);
   wss.clients.forEach( client => {
     if (client.readyState === SocketServer.OPEN){
       console.log(data);
