@@ -18,10 +18,8 @@ const wss = new SocketServer.Server({ server });
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 function broadcast(data){
-  console.log(data);
   wss.clients.forEach( client => {
     if (client.readyState === SocketServer.OPEN){
-      console.log(data);
       client.send(JSON.stringify(data));
     }
   })
@@ -29,7 +27,15 @@ function broadcast(data){
 
 function handleMessage(message){
   message = JSON.parse(message);
-  message.id = uuid();
+  if(message.type === 'postMessage'){
+    message.id = uuid();
+    message.type = "incomingMessage";
+  }
+  if(message.type === 'postNotification' && message.username !== ''){
+    message.type = "incomingNotification";
+    message.id = uuid();
+  }
+  
   broadcast(message);
 }
 

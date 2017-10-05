@@ -8,7 +8,6 @@ class ChatBar extends Component {
   handleKeyDown = (e) => {
     if(e.key === "Enter"){
       e.preventDefault();
-      console.log(this.props.currentUser.name);
       this.props.onMessage(e.target.value);
       e.target.value = '';
     }

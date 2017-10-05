@@ -41,15 +41,20 @@ class App extends Component {
   }
 
   sendMessage = (message) => {
-    console.log('on message: ', message);
     this.socket.send(JSON.stringify({ 
+      type: "postMessage",
       username: this.state.currentUser.name, 
       content: message
     }));
   }
 
   setCurrentUser = (currentUserName) => {
-    console.log('heloo');
+    if(this.state.currentUser.name !== ''){
+      this.socket.send(JSON.stringify({
+        type: "postNotification",
+        content: `${this.state.currentUser.name} has changed their name to ${currentUserName}`
+      }))
+    }
     this.setState({
       currentUser: {
         name: currentUserName
