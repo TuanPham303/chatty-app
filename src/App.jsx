@@ -18,8 +18,8 @@ class App extends Component {
     this.socket = new WebSocket("ws://localhost:3001");
 
     this.socket.addEventListener('message', message => {
-      
-      if(JSON.parse(message.data).username){
+      console.log(message.data);
+      if(JSON.parse(message.data).type === 'incomingMessage'){
         this.setState({
           messages: this.state.messages.concat([{
             username: JSON.parse(message.data).username,
@@ -27,10 +27,18 @@ class App extends Component {
             id: JSON.parse(message.data).id
           }])
         })
+      } else if (JSON.parse(message.data).type === 'incomingNotification'){
+        this.setState({
+          messages: this.state.messages.concat([{
+            content: JSON.parse(message.data).content,
+            id: JSON.parse(message.data).id
+          }])
+        })
+      } else {
+        this.setState({
+          onlineUser: message.data
+        })
       }
-      this.setState({
-        onlineUser: message.data
-      })
     })
 
     this.socket.onopen = () => {
@@ -61,7 +69,7 @@ class App extends Component {
         type: "postNotification",
         content: `${this.state.currentUser.name} has changed their name to ${currentUserName}`
       }))
-    }
+    } 
     this.setState({
       currentUser: {
         name: currentUserName
