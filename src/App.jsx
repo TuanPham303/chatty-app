@@ -7,7 +7,8 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {
-        name: ""
+        name: "",
+        color: ""
       },
       messages: [],
       onlineUser: '',
@@ -18,26 +19,40 @@ class App extends Component {
     this.socket = new WebSocket("ws://localhost:3001");
 
     this.socket.addEventListener('message', message => {
-      console.log(message.data);
-      if(JSON.parse(message.data).type === 'incomingMessage'){
-        this.setState({
-          messages: this.state.messages.concat([{
-            username: JSON.parse(message.data).username,
-            content: JSON.parse(message.data).content,
-            id: JSON.parse(message.data).id
-          }])
-        })
-      } else if (JSON.parse(message.data).type === 'incomingNotification'){
-        this.setState({
-          messages: this.state.messages.concat([{
-            username: JSON.parse(message.data).content,
-            id: JSON.parse(message.data).id
-          }])
-        })
-      } else {
-        this.setState({
-          onlineUser: message.data
-        })
+      const data = JSON.parse(message.data);
+      switch(data.type){
+        case 'incomingMessage':
+          this.setState({
+            messages: this.state.messages.concat([{
+              username: data.username,
+              content: data.content,
+              id: data.id,
+              color: data.color
+            }])
+          })
+        break;
+        case 'incomingNotification':
+          this.setState({
+            messages: this.state.messages.concat([{
+              username: data.content,
+              id: data.id,
+              color: data.color
+            }])
+          })
+        break;
+        case 'onlineUserCount':
+          this.setState({
+            onlineUser: data.count
+          })
+        break;
+        case 'userNameColor':
+          this.setState({
+            currentUser: {
+              name: this.state.currentUser.name,
+              color: data.color
+            }
+          })
+        break;
       }
     })
 
@@ -59,37 +74,52 @@ class App extends Component {
     this.socket.send(JSON.stringify({ 
       type: "postMessage",
       username: this.state.currentUser.name, 
-      content: message
+      content: message,
+      color: this.state.currentUser.color
     }));
   }
 
   setCurrentUser = (currentUserName) => {
+    this.setState({
+      currentUser: {
+        name: currentUserName,
+        color: this.state.currentUser.color
+      }
+    })
     if(this.state.currentUser.name !== ''){
       this.socket.send(JSON.stringify({
         type: "postNotification",
-        content: `${this.state.currentUser.name} has changed their name to ${currentUserName}`
+        content: `${this.state.currentUser.name} has changed their name to ${currentUserName}`,
+        color: this.state.currentUser.color
       }))
     } else {
       this.socket.send(JSON.stringify({
         type: "postNotification",
-        content: `Anonymous has changed their name to ${currentUserName}`
+        content: `Anonymous has joined the room and changed their name to ${currentUserName}`,
+        color: this.state.currentUser.color
       }))
     }
-    this.setState({
-      currentUser: {
-        name: currentUserName
-      }
-    })
+    
+    
   }
 
   render() {
     return (
       <div>
         <nav className="navbar">
-          <a href="/" className="navbar-brand">Chatty {this.state.connected ? "Connected" : "Disconnected" } {this.state.onlineUser}</a>
+          <a href="/" className="navbar-brand">Chatty {this.state.connected ? "Connected" : "Disconnected" } --  {this.state.onlineUser} online</a>
         </nav>
-        <MessageList messages = { this.state.messages } />
-        <ChatBar currentUser={this.state.currentUser} onMessage={this.onMessage} connected={this.state.connected} setCurrentUser={this.setCurrentUser} />        
+        <MessageList 
+          messages={this.state.messages} 
+          currentUser={this.state.currentUser} 
+        />
+        <ChatBar 
+          color={this.state.currentUser.color}
+          currentUser={this.state.currentUser} 
+          onMessage={this.onMessage} 
+          connected={this.state.connected} 
+          setCurrentUser={this.setCurrentUser} 
+        />        
       </div>
     );
   }

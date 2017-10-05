@@ -41,17 +41,34 @@ function handleMessage(message){
 
 function handleConnection(ws){
   console.log('Client connected')
+////////////////// set random color ///////////////////
+  const colorSet = ['#446CB3', '#EC644B', '#4ECDC4', '#E9D460'];
+  const ranNumber = Math.floor(Math.random() * 4);
+  ws.send(JSON.stringify({
+    type: 'userNameColor',
+    color: colorSet[ranNumber]
+  }));
+
+//////////// handle event when receive message from client ////////
   ws.on('message', handleMessage);
-  const onlineUser = wss._server._connections;
+  //////// count online users on open ///////
+  const onlineUserCount = wss._server._connections;
   wss.clients.forEach( client => {
     if (client.readyState === SocketServer.OPEN){
-      client.send(JSON.stringify(onlineUser));
+      client.send(JSON.stringify({
+        type: 'onlineUserCount',
+        count: onlineUserCount
+      }));
     }
   })
   ws.on('close', () => {
+  //////// count online users on close ///////  
     wss.clients.forEach( client => {
       if (client.readyState === SocketServer.OPEN){
-        client.send(JSON.stringify(onlineUser));
+        client.send(JSON.stringify({
+        type: 'onlineUserCount',
+        count: onlineUserCount
+      }));
       }
     })
     console.log('Client disconnected')

@@ -23,8 +23,24 @@ class ChatBar extends Component {
   render() {
     return (
       <footer className="chatbar">
-        <input className="chatbar-username" placeholder='Name' onBlur={this.handleUserName} disabled={!this.props.connected} />
-        <input className="chatbar-message" placeholder="Type a message and hit ENTER" onKeyDown={this.handleKeyDown} disabled={!this.props.connected} />
+        <input 
+          style={{
+            color: this.props.color
+          }}
+          className="chatbar-username" 
+          placeholder='Name' 
+          onBlur={this.handleUserName} 
+          disabled={!this.props.connected} 
+        />
+        <input 
+          style={{
+            color: this.props.color
+          }}
+          className="chatbar-message" 
+          placeholder="Type a message and hit ENTER" 
+          onKeyDown={this.handleKeyDown} 
+          disabled={!this.props.connected} 
+        />
       </footer>
     );
   }
