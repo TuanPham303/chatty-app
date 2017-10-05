@@ -9,7 +9,8 @@ class App extends Component {
       currentUser: {
         name: ""
       },
-      messages: []
+      messages: [],
+      onlineUser: '',
     };
   }
 
@@ -17,12 +18,18 @@ class App extends Component {
     this.socket = new WebSocket("ws://localhost:3001");
 
     this.socket.addEventListener('message', message => {
+      
+      if(JSON.parse(message.data).username){
+        this.setState({
+          messages: this.state.messages.concat([{
+            username: JSON.parse(message.data).username,
+            content: JSON.parse(message.data).content,
+            id: JSON.parse(message.data).id
+          }])
+        })
+      }
       this.setState({
-        messages: this.state.messages.concat([{
-          username: JSON.parse(message.data).username,
-          content: JSON.parse(message.data).content,
-          id: JSON.parse(message.data).id
-        }])
+        onlineUser: message.data
       })
     })
 
@@ -66,7 +73,7 @@ class App extends Component {
     return (
       <div>
         <nav className="navbar">
-          <a href="/" className="navbar-brand">Chatty {this.state.connected ? "Connected" : "Disconnected" }</a>
+          <a href="/" className="navbar-brand">Chatty {this.state.connected ? "Connected" : "Disconnected" } {this.state.onlineUser}</a>
         </nav>
         <MessageList messages = { this.state.messages } />
         <ChatBar currentUser={this.state.currentUser} onMessage={this.onMessage} connected={this.state.connected} setCurrentUser={this.setCurrentUser} />        

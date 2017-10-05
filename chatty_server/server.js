@@ -42,7 +42,20 @@ function handleMessage(message){
 function handleConnection(ws){
   console.log('Client connected')
   ws.on('message', handleMessage);
-  ws.on('close', () => console.log('Client disconnected'));
+  const onlineUser = wss._server._connections;
+  wss.clients.forEach( client => {
+    if (client.readyState === SocketServer.OPEN){
+      client.send(JSON.stringify(onlineUser));
+    }
+  })
+  ws.on('close', () => {
+    wss.clients.forEach( client => {
+      if (client.readyState === SocketServer.OPEN){
+        client.send(JSON.stringify(onlineUser));
+      }
+    })
+    console.log('Client disconnected')
+  });
 }
 
 wss.on('connection', handleConnection);
