@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ChatBar from './ChatBar.jsx';
-import MessageList from './MessageList.jsx'
+import MessageList from './MessageList.jsx';
+import NavBar from './NavBar.jsx'
 
 class App extends Component {
   constructor(props){
@@ -67,6 +68,7 @@ class App extends Component {
   }
 
   onMessage = (message) => {
+    
     this.sendMessage(message);
   }
 
@@ -95,7 +97,7 @@ class App extends Component {
     } else {
       this.socket.send(JSON.stringify({
         type: "postNotification",
-        content: `Anonymous has joined the room and changed their name to ${currentUserName}`,
+        content: `Anonymous joined the room and changed their name to ${currentUserName}`,
         color: this.state.currentUser.color
       }))
     }
@@ -106,9 +108,10 @@ class App extends Component {
   render() {
     return (
       <div>
-        <nav className="navbar">
-          <a href="/" className="navbar-brand">Chatty {this.state.connected ? "Connected" : "Disconnected" } --  {this.state.onlineUser} online</a>
-        </nav>
+        <NavBar  
+          connected={this.state.connected}
+          onlineUser={this.state.onlineUser}
+        />
         <MessageList 
           messages={this.state.messages} 
           currentUser={this.state.currentUser} 
