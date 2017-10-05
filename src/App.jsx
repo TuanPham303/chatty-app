@@ -30,7 +30,7 @@ class App extends Component {
       } else if (JSON.parse(message.data).type === 'incomingNotification'){
         this.setState({
           messages: this.state.messages.concat([{
-            content: JSON.parse(message.data).content,
+            username: JSON.parse(message.data).content,
             id: JSON.parse(message.data).id
           }])
         })
@@ -69,7 +69,12 @@ class App extends Component {
         type: "postNotification",
         content: `${this.state.currentUser.name} has changed their name to ${currentUserName}`
       }))
-    } 
+    } else {
+      this.socket.send(JSON.stringify({
+        type: "postNotification",
+        content: `Anonymous has changed their name to ${currentUserName}`
+      }))
+    }
     this.setState({
       currentUser: {
         name: currentUserName

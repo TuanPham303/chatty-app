@@ -14,6 +14,9 @@ class ChatBar extends Component {
   }
 
   handleUserName = (e) => {
+    if(e.target.value === ''){
+        e.target.value = 'Anonymous';
+      }
     this.props.setCurrentUser(e.target.value);
   }
 
