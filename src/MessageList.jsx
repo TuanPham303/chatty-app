@@ -13,7 +13,8 @@ class MessageList extends Component {
         username = {message.username} 
         content={message.content} 
         currentUser={this.props.currentUser} 
-        color={message.color}/>
+        color={message.color}
+        imgURL={message.imgURL}/>
     });
     return(
       <main className = "messages">

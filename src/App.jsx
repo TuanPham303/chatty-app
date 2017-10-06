@@ -28,7 +28,8 @@ class App extends Component {
               username: data.username,
               content: data.content,
               id: data.id,
-              color: data.color
+              color: data.color,
+              imgURL: data.imgURL
             }])
           })
         break;
@@ -68,16 +69,30 @@ class App extends Component {
   }
 
   onMessage = (message) => {
-    
-    this.sendMessage(message);
+    const imgEnding = ['.jpg', '.png', '.gif'];
+    let imgURL = '';
+    const mesArray = message.split(' ');
+    mesArray.forEach((mess) => {
+      if(imgEnding.indexOf(mess.slice(-4)) !== -1 ){
+        imgURL = mess;
+        mesArray.splice(mesArray.indexOf(mess), 1);
+      }
+    })
+    const messToSend = {
+      content: mesArray.join(' '),
+      imgURL: imgURL
+    }
+    console.log(messToSend);
+    this.sendMessage(messToSend);
   }
 
   sendMessage = (message) => {
     this.socket.send(JSON.stringify({ 
       type: "postMessage",
       username: this.state.currentUser.name, 
-      content: message,
-      color: this.state.currentUser.color
+      content: message.content,
+      color: this.state.currentUser.color,
+      imgURL: message.imgURL
     }));
   }
 
