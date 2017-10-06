@@ -3,6 +3,10 @@ Chatty App
 
 A chat app using React and WebSocket
 
+### Screenshot
+
+![Alt text](https://github.com/TuanPham303/chatty-app/blob/master/build/Screen%20Shot%202017-10-05%20at%206.07.20%20PM.png?raw=true)
+
 ### Usage
 
 Clone the repo
