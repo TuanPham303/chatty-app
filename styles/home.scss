@@ -15,7 +15,7 @@ body {
 }
 
 .chatbar {
-  background: tomato;
+  background: #2C3E50;
   border-top: 1px solid black;
   bottom: 0;
   display: flex;
@@ -33,6 +33,7 @@ body {
   line-height: 40px;
   margin: 5px;
   padding: 0 9px;
+  font-weight: bold;
 }
 
 .chatbar-message {
@@ -70,7 +71,7 @@ body {
 }
 
 .navbar {
-  background: tomato;
+  background: #2C3E50;
   border-bottom: 1px solid black;
   height: 60px;
   left: 0;
@@ -78,6 +79,7 @@ body {
   position: fixed;
   right: 0;
   top: 0;
+  color: #fff
 }
 
 .navbar-brand {
